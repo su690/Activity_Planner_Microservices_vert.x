@@ -1,4 +1,5 @@
 🗂️ Activity Planner – Vert.x Microservices Architecture
+
 This repository contains a fully modular Activity Planner application built using Eclipse Vert.x and a microservices architecture.
 It includes independent services for authentication, user management, planning, activities, notifications, and a separate API gateway — all orchestrated with Docker and Kubernetes.
 The project demonstrates modern backend engineering concepts such as reactive programming, non‑blocking I/O, distributed services, scalability, and containerized deployment.
