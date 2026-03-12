@@ -1,0 +1,130 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=Gyanendra9931@
+      - MYSQL_DATABASE=activity_planner
+      - MYSQL_USER=activity_user
+      - MYSQL_PASSWORD=Gyanendra9931@
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - activity-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    depends_on:
+      - auth-service
+      - user-service
+      - activity-service
+      - planner-service
+      - notification-service
+    networks:
+      - activity-network
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=activity_planner
+      - DB_USER=activity_user
+      - DB_PASSWORD=Gyanendra9931@
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - activity-network
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "8082:8082"
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=activity_planner
+      - DB_USER=activity_user
+      - DB_PASSWORD=Gyanendra9931@
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - activity-network
+
+  activity-service:
+    build: ./activity-service
+    ports:
+      - "8083:8083"
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=activity_planner
+      - DB_USER=activity_user
+      - DB_PASSWORD=Gyanendra9931@
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - activity-network
+
+  planner-service:
+    build: ./planner-service
+    ports:
+      - "8084:8084"
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=activity_planner
+      - DB_USER=activity_user
+      - DB_PASSWORD=Gyanendra9931@
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - activity-network
+
+  notification-service:
+    build: ./notification-service
+    ports:
+      - "8085:8085"
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=activity_planner
+      - DB_USER=activity_user
+      - DB_PASSWORD=Gyanendra9931@
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - activity-network
+
+volumes:
+  mysql_data:
+
+networks:
+  activity-network:
+    driver: bridge
+
